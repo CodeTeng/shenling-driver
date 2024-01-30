@@ -79,7 +79,7 @@
               placeholder-style="color: #818181"
               placeholder="请输入延迟提货原因"
             ></textarea>
-            <text :class="{ error: !delayReasonValid }" class="words-count"
+            <text :class="{ error: wordCount > 50 }" class="words-count"
               >{{ wordCount }}/50</text
             >
           </view>
