@@ -1,6 +1,9 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import vehicleOptions from './vehicle-options'
+  import { useTaskStore } from '@/stores/task'
+
+  const taskStore = useTaskStore()
 
   // 是不显示详细的选项
   const show = ref(false)
@@ -17,9 +20,14 @@
     { id: 9, text: '其他' },
   ])
 
+  const wordCount = computed(() => {
+    return taskStore.recordData.faultDescription.length
+  })
+
   function onRadioChange(ev) {
     // 展开详细的选项
-    show.value = ev.detail.value
+    show.value = !!parseInt(ev.detail.value)
+    taskStore.recordData.isFault = show.value
   }
 </script>
 
@@ -42,13 +50,16 @@
       <uni-list>
         <uni-list-item direction="column" :border="false" title="故障类型">
           <template v-slot:footer>
-            <vehicle-options :types="types" />
+            <vehicle-options :types="types" data-key="faultType" />
             <view class="textarea-wrapper">
               <textarea
                 class="textarea"
+                v-model="taskStore.recordData.faultDescription"
                 placeholder="请输入故障描述"
               ></textarea>
-              <view class="words-count">0/50</view>
+              <view :class="{ error: wordCount > 50 }" class="words-count"
+                >{{ wordCount }}/50</view
+              >
             </view>
           </template>
         </uni-list-item>
@@ -58,7 +69,11 @@
           title="请上传现场照片"
         >
           <template v-slot:footer>
-            <uni-file-picker limit="6"></uni-file-picker>
+            <uni-file-picker
+              v-model="taskStore.recordData.faultImagesList"
+              file-extname="jpg,webp,gif,png"
+              limit="3"
+            ></uni-file-picker>
           </template>
         </uni-list-item>
       </uni-list>

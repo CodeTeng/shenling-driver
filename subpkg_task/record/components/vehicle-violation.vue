@@ -1,7 +1,9 @@
 <script setup>
   import { ref } from 'vue'
   import vehicleOptions from './vehicle-options'
+  import { useTaskStore } from '@/stores/task'
 
+  const taskStore = useTaskStore()
   // 是不显示详细的选项
   const show = ref(false)
   // 构造数据
@@ -34,7 +36,6 @@
     {
       title: '扣分',
       key: 'deductPoints',
-      types: ['0分', '1分', '2分', '3分', '6分', '12分'],
       types: [
         { id: '0', text: '0分' },
         { id: '1', text: '1分' },
@@ -50,6 +51,7 @@
   function onRadioChange(ev) {
     // 展开详细的选项
     show.value = !!parseInt(ev.detail.value)
+    taskStore.recordData.isBreakRules = show.value
   }
 </script>
 
@@ -77,7 +79,7 @@
           :title="item.title"
         >
           <template v-slot:footer>
-            <vehicle-options :types="item.types" />
+            <vehicle-options :types="item.types" :data-key="item.key" />
           </template>
         </uni-list-item>
       </uni-list>

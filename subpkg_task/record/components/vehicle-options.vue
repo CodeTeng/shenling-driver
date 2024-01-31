@@ -1,5 +1,6 @@
 <script setup>
   import { ref } from 'vue'
+  import { useTaskStore } from '@/stores/task'
 
   // 当前被选中选项的索引值
   const tabIndex = ref(-1)
@@ -7,12 +8,16 @@
   // 接收传入组件的数据
   const props = defineProps({
     types: Array,
+    dataKey: String,
   })
 
   // 点击选中选项
-  function onOptionSelect(index) {
+  function onOptionSelect(index, id, text) {
     // 高亮显示选中的选项
     tabIndex.value = index
+    console.log(index)
+    console.log(text)
+    useTaskStore.recordData[props.dataKey] = id
   }
 </script>
 
@@ -23,7 +28,7 @@
       :class="{ active: tabIndex === index }"
       v-for="(option, index) in props.types"
       :key="option.id"
-      @click="onOptionSelect(index)"
+      @click="onOptionSelect(index, option.id, option.text)"
     >
       {{ option.text }}
     </view>

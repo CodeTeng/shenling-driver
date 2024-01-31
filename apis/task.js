@@ -46,3 +46,11 @@ export const deliveryTaskApi = (data) => {
   if (!data) return
   return uniFetch.post('/driver/tasks/deliver', data)
 }
+
+/**
+ * 回车登记
+ */
+export const truckRegistrationApi = (data) => {
+  if (!data) return
+  return uniFetch.post('/driver/tasks/truckRegistration', data)
+}
