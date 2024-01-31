@@ -22,3 +22,19 @@ export const delayTaskApi = (data) => {
   if (!data || !data.id || !data.delayTime || !data.delayReason) return
   return uniFetch.put('/driver/tasks/delay', data)
 }
+
+/**
+ * 提货
+ */
+export const pickUpDeliveryApi = (data) => {
+  if (!data || !data.id) return
+  return uniFetch.post('/driver/tasks/takeDelivery', data)
+}
+
+/**
+ * 上报异常
+ */
+export const reportExceptionApi = (data) => {
+  if (!data || !data.transportTaskId) return
+  return uniFetch.post('/driver/tasks/reportException', data)
+}

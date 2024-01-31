@@ -17,11 +17,11 @@
     const res = await getTaskDetailApi(jobId)
     taskDetail.value = res.data
     isCargoPickUpPictureEmpty.value =
-      res.data.cargoPickUpPictureList.length === 0
-    isCargoPictureEmpty.value = res.data.cargoPictureList.length === 0
+      res.data.cargoPickUpPictureList?.length === 0
+    isCargoPictureEmpty.value = res.data.cargoPictureList?.length === 0
     isCertificatePictureEmpty.value =
-      res.data.certificatePictureList.length === 0
-    isDeliverPictureEmpty.value = res.data.deliverPictureList.length === 0
+      res.data.certificatePictureList?.length === 0
+    isDeliverPictureEmpty.value = res.data.deliverPictureList?.length === 0
   }
 </script>
 
@@ -59,7 +59,7 @@
             </view>
 
             <!-- 待提货展示数据 -->
-            <template v-if="taskDetail.status === 1">
+            <template v-if="taskDetail.status >= 1">
               <view class="info-list-item">
                 <text class="label">提货联系人</text>
                 <text class="value">{{ taskDetail.startHandoverName }}</text>
@@ -80,6 +80,9 @@
 
             <!-- 在途展示数据 -->
             <template v-if="taskDetail.status === 2">
+              <view
+                style="margin: 20rpx 0; border-bottom: 1rpx solid #f4f4f4"
+              ></view>
               <view class="info-list-item">
                 <text class="label">交付联系人</text>
                 <text class="value">{{ taskDetail.finishHandoverName }}</text>
@@ -101,61 +104,61 @@
         </view>
 
         <!-- 已交付 -->
-        <view class="except-info panel">
-          <view class="panel-title">异常信息</view>
-          <view
-            class="info-list"
-            v-for="exception in taskDetail.exceptionList"
-            :key="exception.exceptionTime"
-          >
-            <view class="info-list-item">
-              <text class="label">上报时间</text>
-              <text class="value">{{ exception.exceptionTime }}</text>
-            </view>
-            <view class="info-list-item">
-              <text class="label">异常类型</text>
-              <text class="value">{{ exception.exceptionType }}</text>
-            </view>
-            <view class="info-list-item">
-              <text class="label">处理结果</text>
-              <text class="value">{{ exception.handleResult }}</text>
+        <template v-if="taskDetail.exceptionList">
+          <view class="except-info panel">
+            <view class="panel-title">异常信息</view>
+            <view
+              class="info-list"
+              v-for="exception in taskDetail.exceptionList"
+              :key="exception.exceptionType"
+            >
+              <view class="info-list-item">
+                <text class="label">上报时间</text>
+                <text class="value">{{ exception.exceptionTime }}</text>
+              </view>
+              <view class="info-list-item">
+                <text class="label">异常类型</text>
+                <text class="value">{{ exception.exceptionType }}</text>
+              </view>
+              <view class="info-list-item">
+                <text class="label">处理结果</text>
+                <text class="value">{{ exception.handleResult }}</text>
+              </view>
             </view>
           </view>
-        </view>
+        </template>
 
-        <view class="panel pickup-info">
-          <view class="panel-title">提货信息</view>
-          <view class="label">提货凭证</view>
-          <view
-            class="pictures"
-            v-for="cargoPickUpPicture in taskDetail.cargoPickUpPictureList"
-            :key="cargoPickUpPicture.url"
-          >
-            <image
-              class="picture"
-              :src="cargoPickUpPicture.url"
-              mode="aspectFill"
-            ></image>
-            <view v-if="isCargoPickUpPictureEmpty" class="picture-blank"
-              >暂无图片</view
-            >
+        <template v-if="taskDetail.status >= 2">
+          <view class="panel pickup-info">
+            <view class="panel-title">提货信息</view>
+            <view class="label">提货凭证</view>
+            <view class="pictures">
+              <image
+                v-for="cargoPicture in taskDetail.cargoPictureList"
+                :key="cargoPicture.url"
+                class="picture"
+                :src="cargoPicture.url"
+                mode="aspectFill"
+              ></image>
+              <view v-if="isCargoPictureEmpty" class="picture-blank"
+                >暂无图片</view
+              >
+            </view>
+            <view class="label">货品照片</view>
+            <view class="pictures">
+              <image
+                class="picture"
+                v-for="cargoPickUpPicture in taskDetail.cargoPickUpPictureList"
+                :key="cargoPickUpPicture.url"
+                :src="cargoPickUpPicture.url"
+                mode="aspectFill"
+              ></image>
+              <view v-if="isCargoPickUpPictureEmpty" class="picture-blank"
+                >暂无图片</view
+              >
+            </view>
           </view>
-          <view class="label">货品照片</view>
-          <view
-            class="pictures"
-            v-for="cargoPicture in taskDetail.cargoPictureList"
-            :key="cargoPicture.url"
-          >
-            <image
-              class="picture"
-              :src="cargoPicture.url"
-              mode="aspectFill"
-            ></image>
-            <view v-if="isCargoPictureEmpty" class="picture-blank"
-              >暂无图片</view
-            >
-          </view>
-        </view>
+        </template>
 
         <view class="delivery-info panel">
           <view class="panel-title">交货信息</view>
