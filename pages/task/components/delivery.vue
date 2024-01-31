@@ -43,11 +43,20 @@
           <view class="label">到货时间</view>
           <view class="time">{{ delivery.planArrivalTime }}</view>
           <navigator
+            v-if="delivery.status === 2"
             hover-class="none"
             :url="`/subpkg_task/delivery/index?id=${delivery.id}`"
             class="action"
           >
             交付
+          </navigator>
+          <navigator
+            v-if="delivery.status === 4"
+            hover-class="none"
+            :url="`/subpkg_task/record/index?transportTaskId=${delivery.transportTaskId}`"
+            class="action"
+          >
+            回车登记
           </navigator>
         </view>
       </view>

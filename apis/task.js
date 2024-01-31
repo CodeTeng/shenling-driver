@@ -38,3 +38,11 @@ export const reportExceptionApi = (data) => {
   if (!data || !data.transportTaskId) return
   return uniFetch.post('/driver/tasks/reportException', data)
 }
+
+/**
+ * 交付
+ */
+export const deliveryTaskApi = (data) => {
+  if (!data) return
+  return uniFetch.post('/driver/tasks/deliver', data)
+}

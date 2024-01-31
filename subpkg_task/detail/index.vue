@@ -160,39 +160,37 @@
           </view>
         </template>
 
-        <view class="delivery-info panel">
-          <view class="panel-title">交货信息</view>
-          <view class="label">交货凭证</view>
-          <view
-            class="pictures"
-            v-for="certificatePicture in taskDetail.certificatePictureList"
-            :key="certificatePicture.url"
-          >
-            <image
-              class="picture"
-              :src="certificatePicture.url"
-              mode="aspectFill"
-            ></image>
-            <view v-if="isCertificatePictureEmpty" class="picture-blank"
-              >暂无图片</view
-            >
+        <template v-if="taskDetail.status === 4 || taskDetail.status === 6">
+          <view class="delivery-info panel">
+            <view class="panel-title">交货信息</view>
+            <view class="label">交货凭证</view>
+            <view class="pictures">
+              <image
+                v-for="certificatePicture in taskDetail.certificatePictureList"
+                :key="certificatePicture.url"
+                class="picture"
+                :src="certificatePicture.url"
+                mode="aspectFill"
+              ></image>
+              <view v-if="isCertificatePictureEmpty" class="picture-blank"
+                >暂无图片</view
+              >
+            </view>
+            <view class="label">货品照片</view>
+            <view class="pictures">
+              <image
+                v-for="deliverPicture in taskDetail.deliverPictureList"
+                :key="deliverPicture.url"
+                class="picture"
+                :src="deliverPicture.url"
+                mode="aspectFill"
+              ></image>
+              <view v-if="isDeliverPictureEmpty" class="picture-blank"
+                >暂无图片</view
+              >
+            </view>
           </view>
-          <view class="label">货品照片</view>
-          <view
-            class="pictures"
-            v-for="deliverPicture in taskDetail.deliverPictureList"
-            :key="deliverPicture.url"
-          >
-            <image
-              class="picture"
-              :src="deliverPicture.url"
-              mode="aspectFill"
-            ></image>
-            <view v-if="isDeliverPictureEmpty" class="picture-blank"
-              >暂无图片</view
-            >
-          </view>
-        </view>
+        </template>
       </view>
     </scroll-view>
 
