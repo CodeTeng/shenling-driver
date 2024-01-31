@@ -45,7 +45,7 @@
             <view class="line">{{ taskDetail.endAddress }}</view>
             <navigator
               hover-class="none"
-              url="/subpkg_task/guide/index"
+              :url="`/subpkg_task/guide/index?transportTaskId=${taskDetail.transportTaskId}&startAddress=${taskDetail.startAddress}&endAddress=${taskDetail.endAddress}`"
               class="guide"
             >
               <text class="iconfont icon-guide"></text>

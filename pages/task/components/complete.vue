@@ -1,4 +1,39 @@
-<script></script>
+<script setup>
+  import { ref, onMounted } from 'vue'
+  import { getPickUpListApi } from '@/apis/task'
+
+  const completeList = ref([])
+  const isEmpty = ref(false)
+  const nextPage = ref(1)
+  const hasMore = ref(true)
+  const isTriggered = ref(false)
+
+  onMounted(() => {
+    getCompleteList()
+  })
+
+  const getCompleteList = async (page = 1, pageSize = 5) => {
+    const res = await getPickUpListApi(6, page, pageSize)
+    if (page === 1) completeList.value = []
+    completeList.value = [...completeList.value, ...(res.data.items || [])]
+    isEmpty.value = completeList.value.length === 0
+    // 更新下一页页码
+    nextPage.value = ++res.data.page
+    hasMore.value = nextPage.value <= res.data.pages
+  }
+
+  const onScrollToLower = () => {
+    // 没有数据了 直接返回
+    if (!hasMore.value) return
+    getCompleteList(nextPage.value)
+  }
+
+  const onScrollViewRefresh = async () => {
+    isTriggered.value = true
+    await getCompleteList()
+    isTriggered.value = false
+  }
+</script>
 
 <template>
   <view class="task-search">
@@ -13,28 +48,40 @@
       <button disabled class="button">筛选</button>
     </view>
   </view>
-  <scroll-view scroll-y refresher-enabled class="scroll-view">
+  <scroll-view
+    scroll-y
+    refresher-enabled
+    :refresher-triggered="isTriggered"
+    @scrolltolower="onScrollToLower"
+    @refresherrefresh="onScrollViewRefresh"
+    class="scroll-view"
+  >
     <view class="scroll-view-wrapper">
-      <view v-if="false" class="task-card">
-        <navigator hover-class="none" url="/subpkg_task/detail/index?id=001">
+      <view
+        v-for="complete in completeList"
+        :key="complete.id"
+        class="task-card"
+      >
+        <navigator
+          hover-class="none"
+          :url="`/subpkg_task/detail/index?id=${complete.id}`"
+        >
           <view class="header">
-            <text class="no">任务编号: XAHH1234567</text>
+            <text class="no">任务编号: {{ complete.transportTaskId }}</text>
           </view>
           <view class="body">
             <view class="timeline">
-              <view class="line"
-                >北京市昌平区回龙观街道西三旗桥东金燕龙写字楼8877号</view
-              >
-              <view class="line">河南省郑州市路北区北清路99号</view>
+              <view class="line">{{ complete.startAddress }}</view>
+              <view class="line">{{ complete.endAddress }}</view>
             </view>
           </view>
         </navigator>
         <view class="footer flex">
           <view class="label">提货时间</view>
-          <view class="time">2022.05.04 13:00</view>
+          <view class="time">{{ complete.created }}</view>
         </view>
       </view>
-      <view class="task-blank">无完成货物</view>
+      <view v-if="isEmpty" class="task-blank">无完成货物</view>
     </view>
   </scroll-view>
 </template>

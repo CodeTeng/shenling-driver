@@ -6,19 +6,45 @@
   const deliveryList = ref([])
   // 在途列任务列表是否为空
   const isEmpty = ref(false)
+  const nextPage = ref(1)
+  const hasMore = ref(true)
+  const isTriggered = ref(false)
 
   onMounted(() => {
     getDeliveryList()
   })
 
-  const getDeliveryList = async () => {
-    const res = await getPickUpListApi(2)
-    deliveryList.value = res.data.items || []
+  const getDeliveryList = async (page = 1, pageSize = 5) => {
+    const res = await getPickUpListApi(2, page, pageSize)
+    if (page === 1) deliveryList.value = []
+    deliveryList.value = [...deliveryList.value, ...(res.data.items || [])]
     isEmpty.value = deliveryList.value.length === 0
+    // 更新下一页页码
+    nextPage.value = ++res.data.page
+    hasMore.value = nextPage.value <= res.data.pages
+  }
+
+  const onScrollToLower = () => {
+    // 没有数据了 直接返回
+    if (!hasMore.value) return
+    getDeliveryList(nextPage.value)
+  }
+
+  const onScrollViewRefresh = async () => {
+    isTriggered.value = true
+    await getDeliveryList()
+    isTriggered.value = false
   }
 </script>
 <template>
-  <scroll-view scroll-y refresher-enabled class="scroll-view">
+  <scroll-view
+    scroll-y
+    refresher-enabled
+    :refresher-triggered="isTriggered"
+    @scrolltolower="onScrollToLower"
+    @refresherrefresh="onScrollViewRefresh"
+    class="scroll-view"
+  >
     <view class="scroll-view-wrapper">
       <view
         class="task-card"

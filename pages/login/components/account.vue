@@ -40,7 +40,11 @@
     userStore.token = data
     // 地址重定向或switchTab
     uni.utils.toast('登录成功')
-    uni[routeType.value]({ url: redirectUrl.value })
+    if (routeType.value === 'switchTab') {
+      uni.switchTab({ url: redirectUrl.value })
+    } else {
+      uni.redirectTo({ url: redirectUrl.value })
+    }
   }
 </script>
 
